@@ -8,7 +8,7 @@ export default async function CreateEventPage() {
       const user = session?.user;
     
       if (!user) {
-        redirect('/login');
+        redirect(`/login?callbackUrl=${encodeURIComponent(`/create-event`)}`);
       }
       
     return (

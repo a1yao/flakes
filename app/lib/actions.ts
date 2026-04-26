@@ -86,6 +86,26 @@ export async function getEventAttendees(eventId: string): Promise<UserLite[]> {
   }
 }
 
+export async function joinEvent(eventId: string) {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error('Unauthorized');
+  }
+
+  try {
+    await sql`
+      INSERT INTO "eventAttendees" (event_id, user_id, flaked)
+      VALUES (${eventId}, ${userId}, false)
+    `;
+  }
+  catch (error) {
+    console.error('Failed to join event:', error);
+    throw new Error('Failed to join event.');
+  }
+}
+
 export async function createEvent(prevState: string | undefined, formData: FormData) {
   const rawFormData = {
     name: formData.get('name'),
@@ -100,7 +120,7 @@ export async function createEvent(prevState: string | undefined, formData: FormD
 
 
   if (!userId) {
-    throw new Error('User ID not found');
+    throw new Error('Unauthorized');
   }
 
 
@@ -152,7 +172,6 @@ export async function authenticate(
   formData: FormData,
 ) {
   try {
-    formData.append('callbackUrl', '/dashboard');
     await signIn('credentials', formData);
   } catch (error) {
     if (error instanceof AuthError) {
