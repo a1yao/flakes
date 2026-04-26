@@ -6,17 +6,13 @@ export const authConfig = {
   },
   callbacks: {
     jwt({ token, user }) {
-      console.log('JWT callback fired, user:', user);
       if (user) {
         token.id = user.id;
       }
-      console.log('JWT token after:', token);
       return token;
     },
     session({ session, token }) {
-      console.log('Session callback fired, token:', token);
       session.user.id = token.id as string;
-      console.log('Session after:', session);
       return session;
     },
     authorized({ auth, request: { nextUrl } }) {

@@ -7,7 +7,7 @@ import { useActionState } from "react";
 export default function CreateEventForm() {
     const handleSubmit = async (formData: FormData) => {
         const eventId = await createEvent(undefined, formData);
-        redirect(`/events/${eventId}`);
+        redirect(`/event/${eventId}`);
     }
     return (
         <form action={handleSubmit} className="flex flex-col gap-4">
