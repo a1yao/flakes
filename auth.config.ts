@@ -5,13 +5,35 @@ export const authConfig = {
     signIn: '/login',
   },
   callbacks: {
+    jwt({ token, user }) {
+      console.log('JWT callback fired, user:', user);
+      if (user) {
+        token.id = user.id;
+      }
+      console.log('JWT token after:', token);
+      return token;
+    },
+    session({ session, token }) {
+      console.log('Session callback fired, token:', token);
+      session.user.id = token.id as string;
+      console.log('Session after:', session);
+      return session;
+    },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+      const isOnLoginPage = nextUrl.pathname === '/login';
+      const isOnHomePage = nextUrl.pathname === '/';
+      const isOnCreateEventPage = nextUrl.pathname === '/create-event';
       if (isOnDashboard) {
         if (isLoggedIn) return true;
         return false; // Redirect unauthenticated users to login page
-      } else if (isLoggedIn) {
+      } 
+      else if (isOnCreateEventPage) {
+        if (isLoggedIn) return true;
+        return false; // Redirect unauthenticated users to login page
+      }
+      else if ((isOnHomePage || isOnLoginPage) && isLoggedIn) {
         return Response.redirect(new URL('/dashboard', nextUrl));
       }
       return true;
