@@ -2,7 +2,9 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1e3a8a; /* Dark blue for text */
+  --snow-light: #f0f9ff;
+  --snow-dark: #bae6fd;
 }
 
 @theme inline {
@@ -14,13 +16,51 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a; /* Dark blue background */
+    --foreground: #e0f2fe; /* Light blue text */
+    --snow-light: #1e293b;
+    --snow-dark: #334155;
   }
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(to bottom, var(--snow-light), var(--snow-dark));
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Snowflake animation */
+.snowflake {
+  position: absolute;
+  top: -10px;
+  color: #ffffff;
+  font-size: 1rem;
+  user-select: none;
+  pointer-events: none;
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh);
+  }
+}
+
+/* Add snowflakes dynamically with JS if needed, but for now, static example */
+body::before {
+  content: "❄";
+  position: absolute;
+  top: 10%;
+  left: 20%;
+  animation: fall 10s linear infinite;
+}
+
+body::after {
+  content: "❄";
+  position: absolute;
+  top: 30%;
+  left: 70%;
+  animation: fall 15s linear infinite;
 }

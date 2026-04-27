@@ -2,7 +2,9 @@ import { auth } from "@/auth";
 import { getEventAttendees, getEventDetails, joinEvent } from "../lib/actions";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import HomeButton from "./home-button";
 
+// TODO: Separate AttendeesList component?
 export default async function EventDetails({ eventId }: { eventId: string }) {
   const event = await getEventDetails(eventId);
   const attendees = await getEventAttendees(eventId);
@@ -27,41 +29,58 @@ export default async function EventDetails({ eventId }: { eventId: string }) {
   }
 
   return (
-    <div>
-      <h1>{event.name}</h1>
-      <p>{event.description}</p>
-      <p>
-        {event.date.toString()} at {event.time}
-      </p>
+    <div className="relative min-h-screen bg-slate-800 px-4 py-10 sm:px-6 lg:px-8 text-slate-100">
+      <HomeButton />
+      <div className="max-w-5xl mx-auto rounded-[2rem] bg-slate-900/90 p-8 shadow-2xl shadow-slate-900/30">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-4xl font-semibold text-slate-100">{event.name}</h1>
+            <p className="mt-3 max-w-2xl text-slate-300 leading-7">{event.description}</p>
+          </div>
+          <div className="rounded-3xl bg-slate-800 p-5 text-slate-200 shadow-inner shadow-slate-900/20">
+            <p className="text-sm uppercase tracking-[0.2em] text-slate-400">When</p>
+            <p className="mt-3 text-lg font-medium text-slate-100">{new Date(event.date).toLocaleDateString()}</p>
+            <p className="text-sm text-slate-300 mt-1">{event.time}</p>
+          </div>
+        </div>
 
-      <section>
-        <h2>Attendees</h2>
-        <ul>
-          {attendees.map((attendee) => (
-            <li key={attendee.id}>{attendee.name}</li>
-          ))}
-        </ul>
-      </section>
+        <div className="mt-8 rounded-[2rem] bg-slate-800 p-8 shadow-inner shadow-slate-900/30">
+          <h2 className="text-2xl font-semibold text-slate-100 mb-4">Attendees</h2>
+          {attendees.length === 0 ? (
+            <p className="text-slate-400">No attendees yet.</p>
+          ) : (
+            <ul className="space-y-3">
+              {attendees.map((attendee) => (
+                <li key={attendee.id} className="rounded-3xl bg-slate-700 p-4 text-slate-100 shadow-sm shadow-slate-900/20">
+                  {attendee.name}
+                </li>
+              ))}
+            </ul>
+          )}
 
-      {isUserAttending ? (
-        <form action={flakeEventAction}>
-          <button
-            type="submit"
-            className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-          >
-            Flake
-          </button>
-        </form>
-      ) : (
-        <form action={joinEventAction}>
-          <button
-            type="submit"
-            className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-          >
-            Join event
-          </button>
-        </form>
-      )}
+          <div className="mt-6">
+            {isUserAttending ? (
+              <form action={flakeEventAction}>
+                <button
+                  type="submit"
+                  className="w-full rounded-3xl bg-sky-600 px-4 py-3 text-white hover:bg-sky-500 transition-colors"
+                >
+                  Flake
+                </button>
+              </form>
+            ) : (
+              <form action={joinEventAction}>
+                <button
+                  type="submit"
+                  className="w-full rounded-3xl bg-teal-600 px-4 py-3 text-white hover:bg-teal-500 transition-colors"
+                >
+                  Join Event
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

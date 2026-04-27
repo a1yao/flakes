@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { auth, signOut } from "../../auth";
-import { PowerIcon } from "@heroicons/react/24/outline";
+import { PowerIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import EventsList from "../ui/events_list";
+import { Button } from "../ui/button";
 
 export default async function Page() {
   const session = await auth();
@@ -11,26 +12,45 @@ export default async function Page() {
   if (!user) {
     redirect('/login');
   }
-  
-    return (
-        <div className="flex flex-col items-center justify-center md:h-screen">
+
+  return (
+    <div className="min-h-screen bg-slate-800">
+      {/* Header */}
+      <header className="bg-slate-900 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <h1 className="text-2xl font-bold text-slate-100">
+              Welcome, {user.name}!
+            </h1>
             <form action={async () => {
-            'use server';
-            await signOut({ redirectTo: '/' });
-          }}>
-          <button className="flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
-            <PowerIcon className="w-6" />
-            <div className="hidden md:block">Sign Out</div>
-          </button>
-          <Link href="/create-event" className="flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
-            Create Event
-          </Link>
-          <EventsList userId={user.id}/>
-
-        </form>
-
-        <p>Welcome, {user.name}!</p>
+              'use server';
+              await signOut({ redirectTo: '/' });
+            }}>
+              <Button
+                type="submit"
+                className="flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-500 transition-colors"
+              >
+                <PowerIcon className="w-5 h-5 text-white" />
+                <span className="hidden sm:inline">Sign Out</span>
+              </Button>
+            </form>
+          </div>
         </div>
-        
-    )
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <Link href="/create-event">
+            <Button className="flex items-center gap-2 px-6 py-3 bg-sky-600 text-white rounded-md hover:bg-sky-500 transition-colors">
+              <PlusIcon className="w-5 h-5" />
+              Create New Event
+            </Button>
+          </Link>
+        </div>
+
+        <EventsList userId={user.id} />
+      </main>
+    </div>
+  );
 }
