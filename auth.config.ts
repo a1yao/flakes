@@ -19,6 +19,7 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
       const isOnLoginPage = nextUrl.pathname === '/login';
+      const isOnSignupPage = nextUrl.pathname === '/signup';
       const isOnHomePage = nextUrl.pathname === '/';
       const isOnCreateEventPage = nextUrl.pathname === '/create-event';
       if (isOnDashboard) {
@@ -29,7 +30,7 @@ export const authConfig = {
         if (isLoggedIn) return true;
         return false; // Redirect unauthenticated users to login page
       }
-      else if ((isOnHomePage || isOnLoginPage) && isLoggedIn) {
+      else if ((isOnHomePage || isOnLoginPage || isOnSignupPage) && isLoggedIn) {
         return Response.redirect(new URL('/dashboard', nextUrl));
       }
       return true;

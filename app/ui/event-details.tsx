@@ -3,6 +3,7 @@ import { getEventAttendees, getEventDetails, joinEvent, leaveEvent } from "../li
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import HomeButton from "./home-button";
+import CopyLinkButton from "./copyLink_button";
 
 // TODO: Separate AttendeesList component?
 export default async function EventDetails({ eventId }: { eventId: string }) {
@@ -18,7 +19,6 @@ export default async function EventDetails({ eventId }: { eventId: string }) {
   }
   async function leaveEventAction(formData: FormData) {
     "use server";
-    // This shouldn't ever be the case because the leave button should only ever appear if the user is signed in. But just in case, we check again and redirect to login if not signed in.
     if (!user) {
         redirect(`/login?callbackUrl=${encodeURIComponent(`/event/${eventId}`)}`);
     }
@@ -91,6 +91,8 @@ export default async function EventDetails({ eventId }: { eventId: string }) {
             )}
           </div>
         </div>
+
+        <CopyLinkButton eventId={eventId} />
       </div>
     </div>
   );
