@@ -142,9 +142,26 @@ export async function createEvent(prevState: string | undefined, formData: FormD
   
 
   return eventId;
+}
 
+export async function leaveEvent(eventId: string) {
+  const session = await auth();
+  const userId = session?.user?.id; 
 
+  if (!userId) {
+    throw new Error('Unauthorized');
+  }
 
+  try {
+    await sql`
+      DELETE FROM "eventAttendees"
+      WHERE event_id = ${eventId} AND user_id = ${userId}
+    `;
+  }
+  catch (error) {
+    console.error('Failed to leave event:', error);
+    throw new Error('Failed to leave event.');
+  }
 }
 
 export async function signup(formData: FormData) {

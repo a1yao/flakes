@@ -4,6 +4,7 @@ import { PowerIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import EventsList from "../ui/events_list";
 import { Button } from "../ui/button";
+import { Suspense } from "react";
 
 export default async function Page() {
   const session = await auth();
@@ -48,8 +49,10 @@ export default async function Page() {
             </Button>
           </Link>
         </div>
-
-        <EventsList userId={user.id} />
+        <Suspense>
+          <EventsList userId={user.id} />
+        </Suspense>
+        
       </main>
     </div>
   );

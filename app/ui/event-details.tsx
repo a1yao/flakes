@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getEventAttendees, getEventDetails, joinEvent } from "../lib/actions";
+import { getEventAttendees, getEventDetails, joinEvent, leaveEvent } from "../lib/actions";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import HomeButton from "./home-button";
@@ -15,6 +15,17 @@ export default async function EventDetails({ eventId }: { eventId: string }) {
 
   async function flakeEventAction(formData: FormData) {
     "use server";
+  }
+  async function leaveEventAction(formData: FormData) {
+    "use server";
+    // This shouldn't ever be the case because the leave button should only ever appear if the user is signed in. But just in case, we check again and redirect to login if not signed in.
+    if (!user) {
+        redirect(`/login?callbackUrl=${encodeURIComponent(`/event/${eventId}`)}`);
+    }
+    else {
+        await leaveEvent(eventId);
+        revalidatePath(`/event/${eventId}`);
+    }
   }
   async function joinEventAction(formData: FormData) {
     "use server";
@@ -60,12 +71,12 @@ export default async function EventDetails({ eventId }: { eventId: string }) {
 
           <div className="mt-6">
             {isUserAttending ? (
-              <form action={flakeEventAction}>
+              <form action={leaveEventAction}>
                 <button
                   type="submit"
                   className="w-full rounded-3xl bg-sky-600 px-4 py-3 text-white hover:bg-sky-500 transition-colors"
                 >
-                  Flake
+                  Leave Event
                 </button>
               </form>
             ) : (
