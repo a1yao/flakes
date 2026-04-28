@@ -1,9 +1,14 @@
+'use client';
+
 import { AtSymbolIcon, UserIcon, KeyIcon } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { signup } from "../lib/actions"
+import { useSearchParams } from "next/navigation";
 
 export default function SignupForm() {
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
     return (
         <form action={signup} className="space-y-3">
             <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
@@ -59,6 +64,7 @@ export default function SignupForm() {
                         </div>
                     </div>
                 </div>
+                <input type="hidden" name="callbackUrl" value={callbackUrl} />
                 <Button className="mt-8 w-full" type="submit">
                     Sign Up <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
                 </Button>

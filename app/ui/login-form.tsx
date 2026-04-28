@@ -13,6 +13,7 @@ import { authenticate } from "../lib/actions";
 export default function LoginForm() {
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+    const signupUrl = `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`;
     const [errorMessage, formAction, isPending] = useActionState(
         authenticate,
         undefined,
@@ -81,6 +82,12 @@ export default function LoginForm() {
             </>
           )}
         </div>
+        <p className="text-center text-xs text-gray-500 mt-2">
+          Don&apos;t have an account?{' '}
+          <a href={signupUrl} className="font-medium text-gray-900 hover:underline">
+            Sign up
+          </a>
+        </p>
       </div>
     </form>
   );

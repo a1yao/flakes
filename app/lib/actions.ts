@@ -3,7 +3,7 @@
 import { signIn, auth } from '@/auth';
 import { AuthError } from 'next-auth';
 import bcrypt from 'bcrypt';
-import z from 'zod';
+import z, { string } from 'zod';
 import postgres from 'postgres';
 import { time } from 'console';
 import { redirect } from 'next/dist/server/api-utils';
@@ -169,9 +169,14 @@ export async function signup(formData: FormData) {
     email: formData.get('email'),
     name: formData.get('name'),
     password: formData.get('password'),
+    callbackUrl: formData.get('callbackUrl'),
   }
+  console.log('Raw form data:', rawFormData);
   
   // TODO: Password strength validation checks
+  const redirectTo = rawFormData.callbackUrl?.toString() || '/dashboard';
+  console.log('Callback URL:', redirectTo);
+
   const { email, name, password } = validateUserSchema.parse(rawFormData);
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -180,7 +185,7 @@ export async function signup(formData: FormData) {
     VALUES (${email}, ${name}, ${hashedPassword})
   `;
 
-  await signIn('credentials', { email, password });
+  await signIn('credentials', { email, password, redirectTo });
 
 }
  
@@ -189,6 +194,7 @@ export async function authenticate(
   formData: FormData,
 ) {
   try {
+    console.log("Raw form data:", Object.fromEntries(formData.entries()));
     await signIn('credentials', formData);
   } catch (error) {
     if (error instanceof AuthError) {
